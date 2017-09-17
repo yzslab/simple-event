@@ -64,6 +64,8 @@ int simpleEventPollWait(simpleEventPollAdapter *instance, simpleEventFD *fds, in
     int happenEventNum = poll(instance->fds, instance->maxEvents, timeout);
     if (happenEventNum < 0)
         return -1;
+    else if (!happenEventNum)
+        return 0;
 
     int j = 0;
     for (i = 0; i < instance->maxEvents && j < happenEventNum; ++i) {

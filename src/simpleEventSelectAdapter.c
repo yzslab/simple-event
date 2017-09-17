@@ -57,16 +57,21 @@ int simpleEventSelectWait(simpleEventSelectAdapter *instance, simpleEventFD *fds
     simpleEventCleanIterator(instance->simpleEventInstance, iterator);
 
     struct timeval tv, *tvPtr = &tv;
+    suseconds_t microSeconds;
     if (timeout == -1)
         tvPtr = NULL;
     else {
+        microSeconds = (timeout % 1000) * 1000;
+        timeout /= 1000;
         tv.tv_sec = timeout;
-        tv.tv_usec = 0;
+        tv.tv_usec = microSeconds;
     }
 
     int happenEventNum = select(instance->maxEvents, &instance->readFDs, &instance->writeFDs, &instance->exceptFDs, tvPtr);
     if (happenEventNum < 0)
         return -1;
+    else if (!happenEventNum)
+        return 0;
 
     iterator = simpleEventGetIterator(instance->simpleEventInstance);
     int i = 0, event;
@@ -75,7 +80,7 @@ int simpleEventSelectWait(simpleEventSelectAdapter *instance, simpleEventFD *fds
         fd = simpleEventIteratorGet(instance->simpleEventInstance, iterator);
         if (!fd)
             continue;
-        fds[i] = *fd;
+
         event = 0;
         if (FD_ISSET(fd->fd, &instance->readFDs))
             event |= SIMPLE_EVENT_READ;
@@ -83,6 +88,10 @@ int simpleEventSelectWait(simpleEventSelectAdapter *instance, simpleEventFD *fds
             event |= SIMPLE_EVENT_WRITE;
         if (FD_ISSET(fd->fd, &instance->exceptFDs))
             event |= SIMPLE_EVENT_EXCEPTION;
+        if (!event)
+            continue;
+
+        fds[i] = *fd;
         fds[i].events &= event;
         simpleEventIteratorValueClean(instance->simpleEventInstance, fd);
         ++i;

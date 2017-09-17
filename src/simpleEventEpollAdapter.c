@@ -52,6 +52,8 @@ int simpleEventEpollWait(simpleEventEpollAdapter *adapterInstance, simpleEventFD
     happenEventNum = epoll_wait(adapterInstance->epollFD, evlist, adapterInstance->maxEvents, timeout);
     if (happenEventNum < 0)
         return -1;
+    else if (!happenEventNum)
+        return 0;
 
     simpleEventFD *fdPtr;
     int i, realHappenEventNum, events;

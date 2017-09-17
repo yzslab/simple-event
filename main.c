@@ -16,8 +16,8 @@
 
 #define TEST_SIMPLE_TCP_SERVER
 #define TEST_SIMPLE_EVENT
-#define TEST_EPOLL_ADAPTER
-// #define TEST_SELECT_ADAPTER
+// #define TEST_EPOLL_ADAPTER
+#define TEST_SELECT_ADAPTER
 // #define TEST_POLL_ADAPTER
 
 int main(int argc, char *argv[]) {
@@ -100,7 +100,7 @@ int main(int argc, char *argv[]) {
     ssize_t receiveLength, sendLength, totalReceiveBytes;
     void *ptr, *content;
     while (1) {
-        eventNum = simpleEventWait(simpleEventInstance, &fds, -1);
+        eventNum = simpleEventWait(simpleEventInstance, &fds, 1500);
         printf("%d events.\n", eventNum);
         for (i = 0; i < eventNum; ++i) {
             if (fds[i].data == NULL) {
