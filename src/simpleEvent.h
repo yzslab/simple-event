@@ -62,6 +62,7 @@ struct simpleEvent {
 };
 
 simpleEvent *createSimpleEvent(unsigned int maxEvents, simpleEventHandler *eventHandler, simpleEventContainerHandler *containerHandler);
+void destroySimpleEvent(simpleEvent *instance);
 int simpleEventAddFD(simpleEvent *instance, int fd, simpleEventList events, void *data);
 int simpleEventRemoveFD(simpleEvent *instance, int fd);
 int simpleEventWait(simpleEvent *instance, simpleEventFD **fds, int timeout);

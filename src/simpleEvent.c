@@ -24,6 +24,12 @@ simpleEvent *createSimpleEvent(unsigned int maxEvents, simpleEventHandler *event
     return instance;
 }
 
+void destroySimpleEvent(simpleEvent *instance) {
+    instance->containerHandler.clean(instance->containerInstance);
+    instance->eventHandler.handlerClean(instance->eventInstance);
+    free(instance);
+}
+
 int simpleEventAddFD(simpleEvent *instance, int fd, simpleEventList events, void *data) {
     int flags = fcntl(fd, F_GETFL, 0);
     fcntl(fd, F_SETFL, flags | O_NONBLOCK);
